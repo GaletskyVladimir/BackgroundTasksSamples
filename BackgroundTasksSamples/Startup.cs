@@ -1,3 +1,6 @@
+using ApplicationServices.IServices;
+using ApplicationServices.Services;
+using BackgroundTasksSamples.HostedServices;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -32,6 +35,9 @@ namespace BackgroundTasksSamples
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "BackgroundTasksSamples", Version = "v1" });
             });
+
+            services.AddSingleton<IWeatherForecastService, WeatherForecastService>();
+            services.AddHostedService<WeaterForecaseRefresherHostedService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
