@@ -9,13 +9,13 @@ using System.Threading.Tasks;
 
 namespace BackgroundTasksSamples.HostedServices
 {
-    public class WeaterForecaseRefresherHostedService : IHostedService
+    public class WeatherForecastRefresherHostedService : IHostedService
     {
         private readonly IWeatherForecastService _weatherForecastService;
-        private readonly ILogger<WeaterForecaseRefresherHostedService> _logger;
+        private readonly ILogger<WeatherForecastRefresherHostedService> _logger;
         private const int JobInterval = 5000;
 
-        public WeaterForecaseRefresherHostedService(IWeatherForecastService weatherForecastService, ILogger<WeaterForecaseRefresherHostedService> logger)
+        public WeatherForecastRefresherHostedService(IWeatherForecastService weatherForecastService, ILogger<WeatherForecastRefresherHostedService> logger)
         {
             this._weatherForecastService = weatherForecastService;
             this._logger = logger;
@@ -23,7 +23,7 @@ namespace BackgroundTasksSamples.HostedServices
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            _logger.LogInformation("Staring {jobName}", nameof(WeaterForecaseRefresherHostedService));
+            _logger.LogInformation("Staring {jobName}", nameof(WeatherForecastRefresherHostedService));
 
             RefreshForecastAsync(cancellationToken);
 
@@ -32,7 +32,7 @@ namespace BackgroundTasksSamples.HostedServices
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            _logger.LogInformation("Stopping {jobName}", nameof(WeaterForecaseRefresherHostedService));
+            _logger.LogInformation("Stopping {jobName}", nameof(WeatherForecastRefresherHostedService));
 
             return Task.CompletedTask;
         }
@@ -47,7 +47,7 @@ namespace BackgroundTasksSamples.HostedServices
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Backgound task {taskName} threw an exception", nameof(WeaterForecaseRefresherHostedService));
+                    _logger.LogError(ex, "Backgound task {taskName} threw an exception", nameof(WeatherForecastRefresherHostedService));
                 }
 
                 await Task.Delay(JobInterval, cancellationToken);
