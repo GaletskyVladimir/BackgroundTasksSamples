@@ -37,8 +37,8 @@ namespace BackgroundTasksSamples
             });
 
             services.AddSingleton<IWeatherForecastService, WeatherForecastService>();
-            //services.AddHostedService<WeatherForecastRefresherHostedService>();
-            services.AddHostedService<WeatherForecastRefresherBackgroundService>();
+            services.AddHostedService<WeatherForecastRefresherHostedService>();
+            //services.AddHostedService<WeatherForecastRefresherBackgroundService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

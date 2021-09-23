@@ -14,6 +14,8 @@ namespace BackgroundTasksSamples.HostedServices
         private readonly IWeatherForecastService _weatherForecastService;
         private readonly ILogger<WeatherForecastRefresherHostedService> _logger;
         private const int JobInterval = 5000;
+        private CancellationTokenSource _stoppingCts;
+        private Task _executeTask;
 
         public WeatherForecastRefresherHostedService(IWeatherForecastService weatherForecastService, ILogger<WeatherForecastRefresherHostedService> logger)
         {
@@ -24,17 +26,29 @@ namespace BackgroundTasksSamples.HostedServices
         public Task StartAsync(CancellationToken cancellationToken)
         {
             _logger.LogInformation("Staring {jobName}", nameof(WeatherForecastRefresherHostedService));
+            _stoppingCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 
-            RefreshForecastAsync(cancellationToken);
+            _executeTask = RefreshForecastAsync(_stoppingCts.Token);
+            if (_executeTask.IsCompleted)
+            {
+                return _executeTask;
+            }
 
             return Task.CompletedTask;
         }
 
-        public Task StopAsync(CancellationToken cancellationToken)
+        public async Task StopAsync(CancellationToken cancellationToken)
         {
             _logger.LogInformation("Stopping {jobName}", nameof(WeatherForecastRefresherHostedService));
 
-            return Task.CompletedTask;
+            try
+            {
+                _stoppingCts.Cancel();
+            }
+            finally
+            {
+                await Task.WhenAny(_executeTask, Task.Delay(Timeout.Infinite, cancellationToken)).ConfigureAwait(false);
+            }
         }
 
         private async Task RefreshForecastAsync(CancellationToken cancellationToken)
@@ -52,6 +66,8 @@ namespace BackgroundTasksSamples.HostedServices
 
                 await Task.Delay(JobInterval, cancellationToken);
             }
+
+            _logger.LogInformation("Finished loop");
         }
     }
 }
